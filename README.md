@@ -76,7 +76,7 @@ The tool evaluates seven different dietary approaches:
 
    **Using pip:**
    ```bash
-   pip install Flask==2.3.3 scikit-learn==1.6.1 pandas==2.1.0 numpy==1.25.2 joblib==1.3.2 torch==2.8.0
+   pip install Flask==2.3.3 scikit-learn==1.6.1 pandas==2.2.3 numpy==1.26.4 joblib==1.3.2 torch==2.8.0
    ```
 
    **Using conda:**
@@ -217,8 +217,8 @@ huilab-vfa-main/
 The following Python packages are required to run this application:
 - Flask==2.3.3
 - scikit-learn==1.6.1
-- pandas==2.1.0
-- numpy==1.25.2
+- pandas==2.2.3
+- numpy==1.26.4
 - joblib==1.3.2
 - torch==2.8.0
 
