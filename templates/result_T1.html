@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized VFA Loss Prediction and Dietary Recommendation Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #a2d2ff 0%, #bde0fe 50%, #cdb4db 100%);
+            min-height: 100vh;
+            width: 100%;
+        }
+        /* Navigation Bar Styles */
+        .navbar {
+            background: #cdb4db;
+            padding: 0rem 0;
+        }
+        .nav-container {
+            display: flex;
+            justify-content: center;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2.5rem;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3498db;
+        }
+        .nav-link.active { font-weight: 700; }
+
+        .hero-section {
+            background-color: #cdb4db;
+            color: #333;
+            padding: 2rem 1rem;
+            text-align: center;
+            width: 100%;
+        }
+        .hero-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+        .main-container {
+            width: 100%;
+            padding: 2rem 1rem;
+        }
+        .info-section {
+            background-color: #ffffff;
+            color: #333;
+            padding: 2.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #444;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        /* ------ Recommendation Result Cards ------ */
+        .results {
+            background:rgba(255,255,255,0.9);
+            border-radius:12px;
+            padding:2rem;
+            box-shadow:0 4px 16px rgba(0,0,0,0.1);
+            margin:2rem 0;
+            width: 100%;
+        }
+        .prediction-note {
+            background: rgba(255, 248, 225, 0.95);
+            border-left: 4px solid #ffb300;
+            border-radius: 10px;
+            color: #7a5b00;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.2rem;
+        }
+        .cards {
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+            gap:1.5rem;
+        }
+        .card {
+            background:#fff;
+            border-radius:8px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.05);
+            padding:1.5rem;
+            transition:transform .3s;
+            border-left:4px solid #3498db;
+        }
+        .card:hover { transform:translateY(-4px); }
+        .card h3 {
+            font-size:1.2rem; margin-bottom:0.8rem;
+            color:#293e64;
+        }
+        .card .value {
+            font-size:1.6rem; font-weight:700;
+            color:#2c3e50;
+        }
+
+        /* ------ Visualization Section ------ */
+        .visual {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:1.5rem;
+            margin-bottom:2rem;
+            width: 100%;
+        }
+        .chart, .info {
+            background:rgba(255,255,255,0.9);
+            border-radius:12px;
+            padding:1.5rem;
+            box-shadow:0 4px 16px rgba(0,0,0,0.1);
+        }
+        .chart h2, .info h2 {
+            font-size:1.4rem;
+            margin-bottom:1rem;
+            color:#293e64;
+        }
+        .chart-container {
+            position: relative;
+            padding: 10px;
+            height: 350px; /* 相应调整容器高度 */
+        }
+        .bar-chart {
+            display:flex;
+            align-items:end;
+            justify-content:space-around;
+            gap:1rem;
+            height:200px; /* 减小柱状图高度，从300px改为200px */
+            position: relative;
+            padding-right: 0;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                padding: 8px;
+            }
+            .bar-chart {
+                height: 180px;
+                gap: 0.8rem;
+            }
+            .bar {
+                margin: 0 0.3rem;
+            }
+            .bar span.value {
+                font-size: 0.7rem;
+                top: -1rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .chart-container {
+                height: 280px;
+                padding: 6px;
+            }
+            .bar-chart {
+                height: 160px;
+                gap: 0.6rem;
+            }
+            .bar {
+                margin: 0 0.2rem;
+            }
+            .bar span.value {
+                font-size: 0.65rem;
+                top: -0.8rem;
+            }
+        }
+        .bar {
+            flex:1;
+            margin:0 0.5rem;
+            border-radius:6px 6px 0 0;
+            position:relative;
+            transition:background .3s, transform .3s;
+        }
+        .bar:hover { transform:scale(1.05); }
+        .bar span.value {
+            position:absolute;
+            top:-1.2rem;
+            width:100%;
+            text-align:center;
+            font-size:0.8rem;
+            font-weight:600;
+        }
+        /* 不同饮食模式的颜色 */
+        .bar-group1 { background-color: #a2d2ff; }
+        .bar-group2 { background-color: #cdb4db; }
+        .bar-group3 { background-color: #ffafcc; }
+        .bar-group4 { background-color: #ffc8dd; }
+        .bar-group5 { background-color: #bde0fe; }
+        .bar-group6 { background-color: #a2d2ff; }
+        .bar-group7 { background-color: #ffafcc; }
+        /* 图例样式 - 修改为图表下方4列布局 */
+        .legend {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 0.75rem;
+            margin-top: 15px;
+            width: 100%;
+            max-width: none;
+            max-height: none;
+            overflow-y: visible;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        /* 单柱柱状图样式 */
+        .single-bar-chart {
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            height: 220px;
+            position: relative;
+            margin: 20px 0;
+            padding-bottom: 30px;
+        }
+        .single-bar {
+            width: 80px;
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: background .3s, transform .3s;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+        }
+        @media (max-width: 768px) {
+            .single-bar-chart {
+                height: 180px;
+                padding-bottom: 40px;
+            }
+            .single-bar {
+                width: 60px;
+            }
+            .single-bar-value {
+                font-size: 1rem;
+                top: -30px;
+            }
+            .single-bar-label {
+                font-size: 0.8rem;
+                bottom: -35px;
+                width: 100px;
+            }
+        }
+        @media (max-width: 576px) {
+            .single-bar-chart {
+                height: 160px;
+                padding-bottom: 45px;
+            }
+            .single-bar {
+                width: 50px;
+            }
+            .single-bar-value {
+                font-size: 0.9rem;
+                top: -25px;
+            }
+            .single-bar-label {
+                font-size: 0.75rem;
+                bottom: -30px;
+                width: 80px;
+            }
+        }
+        .single-bar:hover {
+            transform: scale(1.05);
+        }
+        .single-bar.positive {
+            background: linear-gradient(to top, #ff6b6b, #ff8e8e);
+        }
+        .single-bar.negative {
+            background: linear-gradient(to top, #4ecdc4, #44a08d);
+        }
+        .single-bar.neutral {
+            background: linear-gradient(to top, #95a5a6, #bdc3c7);
+        }
+        .single-bar-value {
+            position: absolute;
+            top: -35px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            white-space: nowrap;
+            text-align: center;
+            width: 100%;
+            left: 0;
+        }
+        .single-bar-label {
+            position: absolute;
+            bottom: -45px;
+            font-size: 0.9rem;
+            color: #34495e;
+            font-weight: 500;
+            text-align: center;
+            width: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 1.2;
+        }
+            padding: 4px 0;
+        }
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .info p { margin-bottom:1rem; }
+
+        /* ------ Back Button & Footer ------ */
+        .back-btn {
+            display:inline-block; margin:2rem 0;
+            padding:0.8rem 2rem;
+            background:linear-gradient(135deg,#a2d2ff,#cdb4db);
+            color:#2c3e50; font-weight:600;
+            border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+            transition:transform .3s;
+            text-decoration: none;
+        }
+        .back-btn:hover { transform:translateY(-2px); }
+
+        .footer {
+            background-color: #cdb4db;
+            color: #333;
+            text-align: center;
+            padding: 2rem 1rem;
+            width: 100%;
+            margin-top: 3rem;
+        }
+
+        /* ------ Responsive ------ */
+        @media (max-width: 1024px) {
+            .legend {
+                font-size: 0.7rem;
+                gap: 6px 8px;
+            }
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-link {
+                font-size: 1rem;
+                padding: 0.5rem 0.8rem;
+            }
+            .visual {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 400px;
+            }
+            .bar-chart {
+                display: none;
+                height: 250px; /* 小屏幕上也相应减小柱状图高度 */
+                padding-right: 0;
+            }
+            .legend {
+                grid-template-columns: repeat(2, 1fr);
+                font-size: 0.7rem;
+            }
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            .hero-section {
+                padding: 3rem 1rem;
+            }
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .nav-links {
+                gap: 1rem;
+            }
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.6rem;
+            }
+            .chart-container {
+                height: 500px; /* 超小屏幕上再增加高度 */
+            }
+            .legend {
+                font-size: 0.65rem;
+                grid-template-columns: 1fr;
+            }
+            .cards {
+                gap: 1rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .card h3 {
+                font-size: 1.1rem;
+            }
+            .card .value {
+                font-size: 1.4rem;
+            }
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+        }
+        @media (min-width: 768px) {
+            .hero-section {
+                padding: 5rem 2rem;
+            }
+            .hero-title {
+                font-size: 3rem;
+            }
+            .hero-subtitle {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Personalized Dietary Recommendation Tool</h1>
+    <p class="hero-subtitle">Your Tailored VFA Loss Prediction Across Seven Dietary Regimens</p>
+            <nav class="navbar">
+                <div class="nav-container">
+                    <ul class="nav-links">
+                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="/predict" class="nav-link active">Prediction</a></li>
+                        <li><a href="/about" class="nav-link">About</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        {% if prediction_message %}
+        <section class="prediction-note">
+            <strong>Prediction Mode:</strong> {{ prediction_mode|default('unknown') }}. {{ prediction_message }}
+        </section>
+        {% endif %}
+        <section class="results">
+            {% if task_type == "task2" %}
+            <h2>Current Diet Continuation Prediction</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Predicted VFA Change</h3>
+                    <div class="value" id="vfa-change">
+                        {{ "%.2f"|format(results.current_diet_continuation) if results and results.current_diet_continuation is defined else '0.00' }} cm²
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Interpretation</h3>
+                    <div class="value" id="interpretation" style="font-size: 1.2rem;">
+                        {% if results and results.current_diet_continuation is defined %}
+                            {% if results.current_diet_continuation > 0 %}
+                                VFA may decrease (weight loss)
+                            {% elif results.current_diet_continuation < 0 %}
+                                VFA may increase (weight gain)
+                            {% else %}
+                                VFA may remain stable
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <h2>Recommended Dietary Regimen</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Recommended</h3>
+                    <div class="value" id="diet-pattern">
+                        {{ recommended_diet_name|default('N/A') }}
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>VFA Loss</h3>
+                    <div class="value" id="vfa-reduction">
+                        {{ vfa_reduction|default('0') }} cm²
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+
+        {% if task_type != "task2" %}
+        <section class="visual">
+            <div class="chart">
+                <h2>Dietary Regimen Comparison</h2>
+                <div class="chart-container">
+                    <div class="bar-chart" id="bar-chart"></div>
+                    <!-- 图例将通过JavaScript添加到这里 -->
+                </div>
+                <div class="data-table" id="data-table" style="display:none;"></div>
+            </div>
+            <div class="info">
+                <h2>Model Overview</h2>
+                <p>This tool uses LLM-augmented machine learning to predict visceral fat area (VFA) loss based on your baseline characteristics and early response. Trained on data from a seven-arm randomized clinical trial, the model analyzes key participant features to recommend the most effective dietary strategies for reducing VFA. Personalized predictions are made by integrating your data with patterns observed in similar participants, optimizing for metabolic health.</p>
+            </div>
+        </section>
+        {% else %}
+        <section class="visual">
+            <div class="chart">
+                <h2>Predicted VFA Change Visualization</h2>
+                <div class="chart-container">
+                    <div class="single-bar-chart" id="single-bar-chart"></div>
+                </div>
+            </div>
+            <div class="info">
+                <h2>Prediction Explanation</h2>
+                <p>This prediction shows the expected VFA (Visceral Fat Area) change if you continue with your current dietary pattern.</p>
+                <p><strong>Positive values</strong> indicate VFA may decrease over time (weight loss).</p>
+                <p><strong>Negative values</strong> indicate VFA may increase over time (weight gain).</p>
+                <p><strong>Values near zero</strong> suggest VFA may remain relatively stable.</p>
+                <p>This model is based on your current body composition, metabolic indicators, and lifestyle factors.</p>
+            </div>
+        </section>
+        {% endif %}
+
+        <a href="/predict" class="back-btn">← Back to Prediction Form</a>
+    </main>
+
+    <footer class="footer">
+        &copy; 2025 Personalized Dietary Recommendation Tool
+    </footer>
+
+    <script>
+        // Toggle between chart and table
+        function toggleDisplay() {
+            const bar = document.getElementById('bar-chart'),
+                  tbl = document.getElementById('data-table');
+            if(!bar||!tbl) return;
+            if(window.innerWidth<=768) {
+                bar.style.display='none';
+                tbl.style.display='block';
+            } else {
+                bar.style.display='flex';
+                tbl.style.display='none';
+            }
+        }
+
+        // 修改renderChart函数，实现动态颜色和x轴标签 */
+        // Render bar chart
+        function renderChart(data) {
+            const container = document.getElementById('bar-chart');
+            if(!container||!data) return;
+            container.innerHTML='';
+            
+            // 移除旧图例
+            const oldLegend = document.querySelector('.legend');
+            if (oldLegend) oldLegend.remove();
+            
+            // 移除旧的x轴标签
+            const oldXAxis = document.querySelector('.x-axis');
+            if (oldXAxis) oldXAxis.remove();
+            
+            // 排序数据
+            const entries = Object.entries(data).sort((a,b)=>a[1]-b[1]);
+            const max = Math.max(...entries.map(e=>Math.abs(e[1])), 1);
+            
+            // 为每个条目创建柱子
+            entries.forEach(([d,v]) => {
+                const bar = document.createElement('div');
+                
+                // 根据数值大小动态生成颜色
+                let color = '#ffffff'; // 默认为白色(值为0)
+                if (v > 0) {
+                    // 正值（VFA减少）：越大越深蓝
+                    const intensity = Math.min(1, Math.abs(v)/max);
+                    const r = Math.floor(100 - intensity * 50);  // 100-50
+                    const g = Math.floor(150 - intensity * 50); // 150-100
+                    const b = Math.floor(255 - intensity * 55); // 255-200
+                    color = `rgb(${r}, ${g}, ${b})`;
+                } else if (v < 0) {
+                    // 负值（VFA增加）：越小越深红，越大越浅红
+                    const intensity = Math.min(1, Math.abs(v)/max);
+                    const r = Math.floor(255);
+                    const g = Math.floor(255 - intensity * 255);
+                    const b = Math.floor(255 - intensity * 255);
+                    color = `rgb(${r}, ${g}, ${b})`;
+                }
+                
+                bar.className='bar';
+                bar.style.height=`${Math.abs(v)/max*200}px`; // 调整比例以适应新的柱状图高度
+                bar.style.backgroundColor = color;
+                bar.innerHTML=`
+                    <span class="value">${v>0?'+':''}${v}</span>
+                `;
+                container.appendChild(bar);
+            });
+            
+            // 创建x轴标签样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .x-axis {
+                    display: flex;
+                    justify-content: space-around;
+                    width: 100%;
+                    padding: 10px 0;
+                    margin-top: 10px;
+                }
+                .x-label {
+                    flex: 1;
+                    text-align: center;
+                    font-size: 0.75rem;
+                    color: #333;
+                    padding: 0 5px;
+                    word-wrap: break-word;
+                    hyphens: auto;
+                    min-height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // 创建x轴标签
+            const xAxis = document.createElement('div');
+            xAxis.className = 'x-axis';
+            
+            entries.forEach(([d,v]) => {
+                const label = document.createElement('div');
+                label.className = 'x-label';
+                // 处理长文本，将其分割成多行
+                const words = d.split(' ');
+                if (words.length > 3) {
+                    // 简单的文本分割逻辑
+                    let text = '';
+                    let line = '';
+                    for (let i = 0; i < words.length; i++) {
+                        if ((line + words[i]).length > 20) {
+                            text += line + '<br>';
+                            line = words[i] + ' ';
+                        } else {
+                            line += words[i] + ' ';
+                        }
+                    }
+                    text += line;
+                    label.innerHTML = text.trim();
+                } else {
+                    label.textContent = d;
+                }
+                xAxis.appendChild(label);
+            });
+            
+            // 添加x轴标签到容器父元素
+            if (container.parentElement) {
+                container.parentElement.appendChild(xAxis);
+            }
+        }
+
+        // Render table
+        function renderTable(data) {
+            const tbl = document.getElementById('data-table');
+            if(!tbl||!data) return;
+            const entries = Object.entries(data).sort((a,b)=>a[1]-b[1]);
+            let html = `<table style="width:100%;border-collapse:collapse;">
+                <tr><th style="padding:.5rem;border:1px solid #ddd;">Pattern</th>
+                    <th style="padding:.5rem;border:1px solid #ddd;">VFA Loss (cm²)</th></tr>`;
+            entries.forEach(([d,v])=>{
+                html+=`<tr>
+                    <td style="padding:.5rem;border:1px solid #ddd;">${d}</td>
+                    <td style="padding:.5rem;border:1px solid #ddd;">${v>0?'+':''}${v}</td>
+                </tr>`;
+            });
+            html += '</table>';
+            tbl.innerHTML=html;
+        }
+
+        // Convert group names - 修改柱子名称映射
+        function convertGroupNames(data) {
+            const nameMap = {
+                'group1': 'Balanced Diet (100%)',
+                'group2': 'TRF 16:8 (100%)',
+                'group3': 'TRF 16:8 (75%)',
+                'group4': 'Alternate Day Fasting',
+                'group5': '5:2 Diet',
+                'group6': 'Calorie Restriction (75%)',
+                'group7': 'Calorie Restriction (45%)'
+            };
+            const convertedData = {};
+            for (const [key, value] of Object.entries(data)) {
+                convertedData[nameMap[key] || key] = value;
+            }
+            return convertedData;
+        }
+
+        // Render single bar chart for task2
+        function renderSingleBarChart(value) {
+            const container = document.getElementById('single-bar-chart');
+            if (!container || value === undefined || value === null) return;
+            
+            container.innerHTML = '';
+            
+            const maxHeight = 180; // 最大柱子高度
+            const maxAbsValue = Math.max(Math.abs(value), 1); // 避免除零
+            const barHeight = Math.abs(value) / maxAbsValue * maxHeight;
+            
+            // 创建柱子
+            const bar = document.createElement('div');
+            bar.className = 'single-bar';
+            
+            // 根据数值设置颜色类
+            if (value > 0) {
+                bar.classList.add('negative'); // 正值表示VFA减少，使用negative类（蓝色）
+            } else if (value < 0) {
+                bar.classList.add('positive'); // 负值表示VFA增加，使用positive类（红色）
+            } else {
+                bar.classList.add('neutral');
+            }
+            
+            bar.style.height = barHeight + 'px';
+            
+            // 添加数值显示（确保显示正负号）
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'single-bar-value';
+            valueSpan.textContent = (value >= 0 ? '+' : '') + value.toFixed(2) + ' cm²';
+            bar.appendChild(valueSpan);
+            
+            // 添加标签
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'single-bar-label';
+            labelSpan.textContent = 'Predicted VFA Change';
+            bar.appendChild(labelSpan);
+            
+            container.appendChild(bar);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if task_type != "task2" %}
+            // Fixed data processing logic to ensure proper handling even if data is empty or incorrectly formatted
+            let data = {};
+            try {
+                // Attempt to parse template data
+                // 使用安全的方式处理模板数据
+                const rawData = {{ all_results|tojson|safe if all_results is defined else '{}' }};
+                // Ensure data is an object type
+                if (typeof rawData === 'object' && rawData !== null) {
+                    data = rawData;
+                }
+            } catch (error) {
+                console.error('Error parsing data:', error);
+                // 提供默认的示例数据以确保图表能够显示
+                data = {
+                    'Balanced Diet (100% Energy)': 2.5,
+                    'TRF 16:8 (100% Energy)': 3.2,
+                    'TRF 16:8 (75% Energy)': 4.1,
+                    'alternate day fasting (75% Energy)': 5.3,
+                    '5+2 (75% Energy)': 4.8,
+                    'CCR (75% Energy)': 6.2,
+                'CCR (45% Energy)': 8.5
+                };
+            }
+            
+            // Convert group names
+            try {
+                data = convertGroupNames(data);
+            } catch (error) {
+                console.error('Error converting group names:', error);
+            }
+            
+            renderChart(data);
+            renderTable(data);
+            toggleDisplay();
+            {% else %}
+            // For task2, render single bar chart
+            try {
+                const vfaValue = {{ results.current_diet_continuation|tojson|safe if results and results.current_diet_continuation is defined else '0' }};
+                renderSingleBarChart(parseFloat(vfaValue));
+            } catch (error) {
+                console.error('Error rendering single bar chart:', error);
+                // 如果出错，显示默认值
+                renderSingleBarChart(0);
+            }
+            {% endif %}
+        });
+        window.addEventListener('resize', toggleDisplay);
+    </script>
+</body>
+</html>

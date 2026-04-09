@@ -1,0 +1,201 @@
+/* 全局排版 */
+body {
+    position: relative;            /* 绝对定位相对 body */
+    font-family: 'Noto Sans SC', sans-serif;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    line-height: 1.8;
+    color: #2c3e50;
+    background-color: #f9f9f9;
+    font-size: 16px;
+}
+
+/* 主容器 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 40px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* 头部 */
+.academic-header {
+    background-color: #293e64;
+    color: #fff;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.academic-header h1 {
+    margin: 0;
+    font-family: 'Times New Roman', serif;
+    font-weight: normal;
+}
+
+/* 页脚 */
+.academic-footer {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    margin-top: 50px;
+    border-top: 1px solid #e1e4e8;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+/* 表单布局 */
+.form-section {
+    margin: 2rem 0;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f0f4f8;
+}
+.form-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.form-group label {
+    width: 220px;
+    font-weight: bold;
+    color: #293e64;
+    margin-right: 10px;
+}
+.form-group input,
+.form-group select {
+    flex: 1;
+    max-width: 300px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+}
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2c3e50;
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+/* 按钮 */
+.btn {
+    display: inline-block;
+    background: #293e64;
+    color: #fff;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: 'Georgia', serif;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+}
+.btn:hover {
+    background: #34495e;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.2);
+}
+
+/* 响应式：桌面双列 */
+@media (min-width: 768px) {
+    .form-section { display: flex; flex-wrap: wrap; gap: 2%; }
+    .form-group { width: 49%; }
+    .form-group[data-fullwidth] { width: 100%; }
+}
+/* 响应式：移动端 */
+@media (max-width: 767px) {
+    .form-group { flex-direction: column; align-items: flex-start; }
+    .form-group label { margin-bottom: 5px; }
+}
+
+/* 其他通用模块样式 */
+.result {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #fff;
+    border: 1px solid #e1e4e8;
+    border-left: 4px solid #293e64;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.nav-link {
+    margin-top: 2.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+.nav-link a {
+    color: #2c3e50;
+    text-decoration: none;
+}
+.nav-link a:hover { text-decoration: underline; }
+
+/* 顶部控制按钮 */
+.top-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+#languageToggle, .help-link {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#languageToggle { background-color: #007bff; }
+#languageToggle:hover { background-color: #0056b3; }
+.help-link { background-color: #293e64; text-decoration: none; }
+.help-link:hover {
+    background-color: #1a2541;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 模块化面板 */
+.module {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.module-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1.15rem;
+    color: #fff;
+    box-sizing: border-box;
+}
+.demographics .module-header   { background-color: #2c3e50; }
+.body-composition .module-header { background-color: #27ae60; }
+.metabolic .module-header      { background-color: #8e44ad; }
+.lifestyle .module-header      { background-color: #3498db; }
+.dynamic-response .module-header { background-color: #e67e22; }
+.module-content {
+    display: flex;
+    background-color: #fff;
+    min-height: 300px;
+    box-sizing: border-box;
+}
+.form-fields   { flex: 1; padding: 20px; display: flex; flex-direction: column; }
+.icon-section  {
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    padding: 20px 10px;
+}
+.icon        { font-size: 2rem; margin-bottom: 10px; }
+.icon-title  { font-size: 0.9rem; font-weight: bold; }
+.spacer      { width: 100%; height: 40px; background-color: transparent; }

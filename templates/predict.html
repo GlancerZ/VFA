@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Personalized VFA Loss Prediction and Dietary Recommendation Tool</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* Keep original full-screen gradient background */
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #a2d2ff 0%, #bde0fe 50%, #cdb4db 100%);
+      color: #2c3e50;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* New: Research foundation area above footer */
+    .citation-section {
+      background-color: #ffffff;
+      color: #333;
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+    .citation-text {
+      font-size: 1rem;
+      color: #666;
+      font-style: italic;
+      margin: 0;
+    }
+
+    /* Navigation Bar Styles - Consistent with index page */
+    .navbar {
+      background: #cdb4db;
+      padding: 0rem 0;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: center;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: #2c3e50;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: color 0.3s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #3498db;
+    }
+    .nav-link.active { font-weight: 700; }
+
+    /* Hero Section - Consistent with index page */
+    .hero-section {
+      background-color: #cdb4db;
+      color: #333;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .hero-subtitle {
+      font-size: 1.3rem;
+      font-weight: 300;
+      margin-bottom: 2rem;
+      color: #666;
+    }
+
+    /* Main container full width */
+    .container {
+      width: 100%;
+      padding: 2rem 3rem;
+      box-sizing: border-box;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem 1.5rem;
+      }
+      .nav-links {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .nav-link {
+        font-size: 1rem;
+        padding: 0.5rem 0.8rem;
+      }
+      .hero-title {
+        font-size: 2rem;
+      }
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .container {
+        padding: 1rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .nav-link {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+      }
+      .hero-title {
+        font-size: 1.8rem;
+      }
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+    }
+
+    /* Add left vertical line style */
+    .analysis-item {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .analysis-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      bottom: 0;
+      width: 4px;
+      background: #6495ED;
+      border-radius: 2px;
+    }
+
+    /* Module unified style */
+    .module {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    /* Fixed content area minimum height to ensure all modules are equal height */
+    .module-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      min-height: 260px;
+      align-items: stretch;
+    }
+    @media (max-width: 768px) {
+      .module-content {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 1rem;
+      }
+      .icon-section {
+        display: none; /* 在移动端隐藏图标区域以节省空间 */
+      }
+    }
+
+    /* Module header */
+    .module-header {
+      padding: 1.2rem 1.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    /* Icon area */
+    .icon-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      width: 100%;
+      height: 100%;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      align-self: stretch;
+    }
+
+    /* Different module theme colors and icon backgrounds */
+    .explanation .module-header { background: #6495ED; }  /* Soft blue, replacing gray */
+    .explanation .icon-section  { background: #87CEFA; }
+    .demographics .module-header { background: #4CAF50; }  /* Soft green, replacing too dark gray */
+    .demographics .icon-section  { background: #66BB6A; }
+    .body-composition .module-header { background: #9C27B0; }  /* Purple, avoiding duplication with other modules */
+    .body-composition .icon-section  { background: #BA68C8; }
+    .blood-parameters .module-header { background: #e91e63; }  /* Red pink for blood theme */
+    .blood-parameters .icon-section  { background: #f06292; }
+    .liver-kidney .module-header { background: #5C6BC0; }  /* Soft indigo for medical theme */
+    .liver-kidney .icon-section  { background: #7986CB; }
+    .metabolic .module-header   { background: #FFC107; }  /* Light yellow, avoiding duplication with dynamic-response */
+    .metabolic .icon-section    { background: #FFD54F; }
+    .lifestyle .module-header   { background: #00BCD4; }  /* Cyan, maintaining uniqueness */
+    .lifestyle .icon-section    { background: #4DD0E1; }
+    .birthweight .module-header { background: #F48FB1; }  /* Soft pink, suitable for birth information theme */
+    .birthweight .icon-section  { background: #F8BBD9; }
+    .dynamic-response .module-header { background: #FF9800; }  /* Soft orange, replacing harsh red */
+    .dynamic-response .icon-section  { background: #FFB74D; }
+
+
+    /* 表单行 */
+    .form-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      white-space: nowrap;
+    }
+    .form-group label {
+      font-weight: 500;
+      flex-shrink: 0;
+      min-width: 200px;
+      text-align: left;
+    }
+    
+    /* 移动端表单布局优化 */
+    @media (max-width: 768px) {
+      .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        white-space: normal;
+      }
+      .form-group label {
+        min-width: auto;
+        width: 100%;
+        margin-bottom: 0.3rem;
+      }
+      .form-group input,
+      .form-group select {
+        width: 50% !important;
+        max-width: 200px;
+      }
+      /* 统一移动端提交按钮宽度 */
+      .submit-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      .submit-btn {
+        width: 200px !important;
+        padding: 1rem 1.5rem;
+        margin: 0;
+        text-align: center;
+      }
+    }
+    .form-group label.required::after {
+      content: "*";
+      color: #ff4757;
+      margin-left: 0.2rem;
+    }
+    .form-group input {
+      padding: 0.6rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 1rem;
+      background: #fff;
+      width: 145px;
+      flex-shrink: 0;
+    }
+    
+    .form-group select {
+      padding: 0.6rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 1rem;
+      background: #fff;
+      width: 180px;
+      flex-shrink: 0;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    /* 范围提示文字缩小 */
+    .form-group label span {
+      font-size: 0.85em;
+      color: #666;
+      font-weight: 400;
+    }
+
+    /* 提交按钮 */
+    .submit-section {
+      text-align: center;
+      padding: 2rem 0;
+    }
+    .submit-btn {
+      padding: 1rem 2.5rem;
+      margin: 0 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .submit-btn.baseline {
+      background: #a2d2ff;
+      color: #2c3e50;
+    }
+    .submit-btn.dynamic {
+      background: #9254DE;
+      color: #fff;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+    .submit-btn.baseline:hover {
+      background: #89c2ff;
+    }
+    .submit-btn.dynamic:hover {
+      background: #803ac4;
+    }
+
+
+
+
+
+
+
+    /* 页脚 */
+    footer {
+      background-color: #cdb4db;
+      color: #333;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+  </style>
+  <script>
+    // 验证与任务切换
+    function validateForm(e) {
+      const taskType = document.getElementById('task_type').value;
+      const v = document.getElementsByName('vfa_change_w2')[0].value.trim();
+      if (taskType === 'task2' && !v) {
+        alert('请填写 VFA_change_w2（第2周VFA变化），动态预测必填');
+        e.preventDefault();
+        return false;
+      }
+      
+      // 检查所有数值输入，禁止负数
+      const numberInputs = document.querySelectorAll('input[type="number"]');
+      for (let input of numberInputs) {
+        if (input.value && parseFloat(input.value) < 0) {
+          alert('Error: Negative values are not allowed. Please check your input: ' + input.name);
+          e.preventDefault();
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    function setTaskTypeAndValidate(type) {
+      document.getElementById('task_type').value = type;
+      return validateForm(new Event('submit'));
+    }
+  </script>
+</head>
+<body>
+  <!-- 调整导航栏结构和位置，与index页面完全一致 -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Personalized VFA Loss Prediction and Dietary Recommendation Tool</h1>
+      <p class="hero-subtitle">Enter your information to receive personalized predictions for visceral fat reduction and tailored dietary recommendations to optimize metabolic health.</p>
+      <nav class="navbar">
+        <div class="nav-container">
+          <ul class="nav-links">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/predict" class="nav-link active">Prediction</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <form action="/predict" method="POST" onsubmit="return validateForm(event)">
+      <input type="hidden" name="task_type" id="task_type" value="task1" />
+
+      <!-- Task Explanation -->
+      <section class="module explanation">
+        <div class="module-header">ℹ️ Predictions Explanation</div>
+        <div class="module-content">
+          <div>
+            <p>This tool provides personalized dietary recommendations and predictions for visceral fat area (VFA) loss. By entering your demographic, birth, lifestyle, body composition, biochemical, metabolic, and early response data, you will receive tailored predictions for VFA loss, along with individualized dietary strategies aimed at improving metabolic health.</p>
+              
+              <div class="analysis-item">
+                <h4>Task One: Dietary Group Recommendation</h4>
+                <p>Analyzes your baseline characteristics to predict VFA loss after following four weeks of one of seven dietary regimens.</p>
+              </div>
+              
+              <div class="analysis-item">
+                <h4>Task Two: Early VFA Response Prediction</h4>
+                <p>Incorporates two-week VFA loss data and baseline characteristics to forecast VFA loss after following a four-week dietary regimen.</p>
+              </div>
+              
+              <p style="margin-top: 1rem; font-weight: bold; color: #e74c3c;"><span class="range-text">Note: Values in parentheses represent recommended ranges. Negative values are not allowed, except for VFA Loss After Two Weeks.</span></p>
+          </div>
+          <div class="icon-section">📝</div>
+        </div>
+      </section>
+
+      <!-- Demographics Module -->
+      <section class="module demographics">
+        <div class="module-header">👤 Demographic & Birth Factors</div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-age" style="color: inherit; text-decoration: none; cursor: pointer;">Age</a> <span>(18–35 years)</span>:</label>
+              <input type="number" name="age" min="18" max="100" step="0.0000000001" required />
+            </div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-sex" style="color: inherit; text-decoration: none; cursor: pointer;">Sex</a>:</label>
+              <select name="sex" required>
+                <option value="">Select</option>
+                <option value="2">Female</option>
+                <option value="1">Male</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-birth-weight" style="color: inherit; text-decoration: none; cursor: pointer;">Birth Weight</a> <span>(2–5 kg)</span>:</label>
+              <input type="number" name="birthweight" step="0.0000000001" min="1" max="10" required />
+            </div>
+          </div>
+          <div class="icon-section">📊</div>
+        </div>
+      </section>
+
+      <!-- Lifestyle Module -->
+      <section class="module lifestyle">
+        <div class="module-header">💤 Lifestyle Factors</div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-nap-duration" style="color: inherit; text-decoration: none; cursor: pointer;">Nap Duration</a> <span>(0–3 hours)</span>:</label>
+              <input type="number" name="naptime" step="0.0000000001" min="0" max="5" required />
+            </div>
+          </div>
+          <div class="icon-section">😴</div>
+        </div>
+      </section>
+
+      <!-- Body Composition Module -->
+      <section class="module body-composition">
+        <div class="module-header">🏋️ Body Composition Factors <span class="source-text" style="font-size: 0.6em;">from InBody body composition analyzer</span></div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-tbwffm" style="color: inherit; text-decoration: none; cursor: pointer;">TBW/FFM</a> <span>(65–75%)</span>:</label>
+              <input type="number" name="tbw_ffm" step="0.0000000001" min="0" max="100" required />
+            </div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-trunk-ffm-" style="color: inherit; text-decoration: none; cursor: pointer;">Trunk FFM %</a> <span>(35–50)</span>:</label>
+              <input type="number" name="ffm_trunk_percent" step="0.0000000001" min="0" max="100" required />
+            </div>
+
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-leg-bfm" style="color: inherit; text-decoration: none; cursor: pointer;">Leg BFM</a> <span>(2–10 kg)</span>:</label>
+              <input type="number" name="bfm_leg" step="0.0000000001" min="0" max="50" required />
+            </div>
+
+          </div>
+          <div class="icon-section">📏</div>
+        </div>
+      </section>
+
+      <!-- Blood Parameters Module -->
+      <section class="module blood-parameters">
+        <div class="module-header">🩸 Immune Cell Factors <span class="source-text" style="font-size: 0.6em;">from complete blood count</span></div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-monocyte-count" style="color: inherit; text-decoration: none; cursor: pointer;">Monocyte Count</a> :<br><span>(0.1–0.7 ×10⁹/L)</span></label>
+              <input type="number" name="bc011" step="0.0000000001" min="0" max="10" required />
+            </div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-lymphocyte-percent" style="color: inherit; text-decoration: none; cursor: pointer;">Lymphocyte %</a> <span>(15–60%)</span>:</label>
+              <input type="number" name="bc010" step="0.0000000001" min="0" max="100" required />
+            </div>
+          </div>
+          <div class="icon-section">🩺</div>
+        </div>
+      </section>
+
+      <!-- Metabolic Module -->
+      <section class="module metabolic">
+        <div class="module-header">🧬 Metabolic Factors <span class="source-text" style="font-size: 0.6em;">from VMAX metabolic cart using indirect calorimetry</span></div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-respiratory-quotient" style="color: inherit; text-decoration: none; cursor: pointer;">Respiratory Quotient</a> <span>(0.6–1.0)</span>:</label>
+              <input type="number" name="metcar_rq" step="0.0000000001" min="0" max="10" required />
+            </div>
+          </div>
+          <div class="icon-section">🔥</div>
+        </div>
+      </section>
+
+      <!-- Liver & Kidney Function Module -->
+      <section class="module liver-kidney">
+        <div class="module-header">🩺 Liver & Kidney Function Factors <span class="source-text" style="font-size: 0.6em;">from blood chemistry analysis</span></div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-alp" style="color: inherit; text-decoration: none; cursor: pointer;">ALP</a> <span>(30–150 U/L)</span>:</label>
+              <input type="number" name="sh0018" step="0.0000000001" min="0" max="200" required />
+            </div>
+            <div class="form-group">
+              <label class="required"><a href="/about#feature-urea" style="color: inherit; text-decoration: none; cursor: pointer;">Urea</a> <span>(2–8 mmol/L)</span>:</label>
+              <input type="number" name="sh0024" step="0.0000000001" min="0" max="20" required />
+            </div>
+          </div>
+          <div class="icon-section">🩺</div>
+        </div>
+      </section>
+
+      <!-- Dynamic Response Module -->
+      <section class="module dynamic-response">
+        <div class="module-header">📈 VFA Progression Forecast <span class="range-text" style="font-size: 0.6em;">early response input for accurately predicting four-week VFA loss progression</span></div>
+        <div class="module-content">
+          <div>
+            <div class="form-group">
+              <label>VFA Loss After Two Weeks <span>(-20–20 cm²)</span>:</label>
+              <input type="number" name="vfa_change_w2" step="0.0000000001" min="-100" max="100" />
+            </div>
+          </div>
+          <div class="icon-section">🎯</div>
+        </div>
+      </section>
+
+      <!-- Submit Buttons -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn baseline" onclick="return setTaskTypeAndValidate('task1')" style="width: 250px;">
+          Task One:<br>
+          <span style="font-size: 0.8em;">Dietary Group Recommendation</span>
+        </button>
+        <button type="submit" class="submit-btn dynamic" onclick="return setTaskTypeAndValidate('task2')" style="width: 250px;">
+          Task Two:<br>
+          <span style="font-size: 0.8em;">Early VFA Response Prediction</span>
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <footer>
+    &copy; 2025 Personalized VFA Loss Prediction and Dietary Recommendation Tool. All rights reserved.
+  </footer>
+</body>
+</html>

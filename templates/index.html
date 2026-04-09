@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized VFA Loss Prediction and Dietary Recommendation Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #a2d2ff 0%, #bde0fe 50%, #cdb4db 100%);
+            min-height: 100vh;
+            width: 100%;
+        }
+        /* Navigation Bar Styles */
+        .navbar {
+            background: #cdb4db;
+            padding: 0rem 0;
+        }
+        .nav-container {
+            display: flex;
+            justify-content: center;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2.5rem;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3498db;
+        }
+        .nav-link.active { font-weight: 700; }
+
+        .hero-section {
+            background-color: #cdb4db;
+            color: #333;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+        .main-container {
+            width: 100%;
+            padding: 2rem 1rem;
+        }
+        .info-section {
+            background-color: #ffffff; /* 改为白色 */
+            color: #333;
+            padding: 2.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #444;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        /* 为三个特征模块设置不同的浅色背景 */
+        .feature-card:nth-child(1) {
+            background-color: #e6f7ff; /* 浅蓝色 */
+        }
+        .feature-card:nth-child(2) {
+            background-color: #fff0f6; /* 浅粉色 */
+        }
+        .feature-card:nth-child(3) {
+            background-color: #fffbe6; /* 浅黄色 */
+        }
+        .feature-card {
+            color: #333;
+            padding: 2rem;
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .feature-desc {
+            font-size: 1rem;
+            color: #444;
+        }
+        .cta-section { text-align: center; margin: 3rem 0; }
+        .cta-button {
+            display: inline-block;
+            background-color: #bde0fe;
+            color: #333;
+            padding: 1.2rem 3rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .cta-button:hover { background-color: #a2d2ff; }
+        .citation-section {
+            background-color: #a2d2ff;
+            color: #333;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .citation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .citation-text {
+            font-style: italic;
+            color: #444;
+            line-height: 1.6;
+        }
+        .footer {
+            background-color: #cdb4db;
+            color: #333;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        @media (min-width: 768px) {
+            .features-grid { grid-template-columns: repeat(3,1fr); gap: 1rem; }
+            .hero-section { padding: 5rem 2rem; }
+            .hero-title { font-size: 3rem; }
+            .hero-subtitle { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Personalized VFA Loss Prediction and Dietary Recommendation Tool</h1>
+            <p class="hero-subtitle">Powered by a randomized clinical trial on seven dietary regimens and visceral fat reduction outcomes</p>
+            <nav class="navbar">
+                <div class="nav-container">
+                    <ul class="nav-links">
+                        <li><a href="/" class="nav-link active">Home</a></li>
+                        <li><a href="/predict" class="nav-link">Prediction</a></li>
+                        <li><a href="/about" class="nav-link">About</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <main class="main-container">
+        <section class="info-section">
+            <h2 class="section-title">About This Tool</h2>
+            <p class="description">
+                This tool provides personalized dietary recommendations by analyzing baseline characteristics and early response data, predicting optimal strategies for visceral fat reduction. Based on a seven-arm randomized clinical trial with a within-subject control design, it offers evidence-based guidance to enhance metabolic health in young adults with normal weight through targeted interventions.
+            </p>
+        </section>
+        <section class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔬</div>
+                <h3 class="feature-title">RCT-Based</h3>
+                <p class="feature-desc">Built on evidence from a rigorous randomized clinical trial, ensuring validated metabolic outcomes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">LLM-Augmented</h3>
+                <p class="feature-desc">Leveraging advanced Large Language Model technology to deliver tailored, data-driven recommendations.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Personalized</h3>
+                <p class="feature-desc">Providing individualized predictions based on unique participant profiles for optimized metabolic health outcomes.</p>
+            </div>
+        </section>
+        <section class="citation-section">
+            <h3 class="citation-title">Research Foundation</h3>
+            <p class="citation-text">
+                This tool is built on a seven-arm randomized clinical trial that evaluated the effects of various dietary regimens, including calorie restriction and intermittent fasting, on visceral fat reduction in young adults with normal weight. The trial utilized a within-subject control design and gathered comprehensive data, including baseline participant characteristics, continuous monitoring data, dietary adherence, and recovery-period health outcomes. Leveraging this data, the tool applies advanced predictive models to provide personalized, evidence-based dietary recommendations and predictions for optimizing metabolic health.
+            </p>
+        </section>
+        <section class="cta-section">
+            <a href="/predict" class="cta-button">Start Prediction</a>
+        </section>
+    </main>
+    <footer class="footer">
+        <p>&copy; 2025 Personalized VFA Loss Prediction and Dietary Recommendation Tool. All rights reserved.</p>
+    </footer>
+</body>
+</html>

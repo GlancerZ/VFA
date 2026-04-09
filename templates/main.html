@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visceral Fat Area Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+        h1 { text-align: center; color: #2c3e50; }
+        form { display: flex; flex-direction: column; gap: 16px; }
+        label { font-weight: bold; }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #2980b9; color: #fff; border: none; padding: 12px; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #1a5a7a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Visceral Fat Area Prediction</h1>
+        <form method="post" action="/predict">
+            <label for="FFM_Trunk_percent">FFM Trunk Percent:</label>
+            <input type="number" step="any" name="FFM_Trunk_percent" required>
+
+            <label for="TBW_FFM">TBW FFM:</label>
+            <input type="number" step="any" name="TBW_FFM" required>
+
+
+
+            <label for="Abdomen_Circumference">Abdomen Circumference:</label>
+            <input type="number" step="any" name="Abdomen_Circumference" required>
+
+            <label for="BFM_Leg">BFM Leg:</label>
+            <input type="number" step="any" name="BFM_Leg" required>
+
+            <label for="Age">Age:</label>
+            <input type="number" step="any" name="Age" required>
+
+            <label for="Obesefamh_2">Obesefamh 2:</label>
+            <input type="number" step="any" name="Obesefamh_2" required>
+
+            <label for="Sex_2">Sex 2:</label>
+            <input type="number" step="any" name="Sex_2" required>
+
+            <label for="Sex_1">Sex 1:</label>
+            <input type="number" step="any" name="Sex_1" required>
+
+            <label for="Obesefamh_1">Obesefamh 1:</label>
+            <input type="number" step="any" name="Obesefamh_1" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
